@@ -3,12 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Channel, type: :model do
-  it 'is valid with proper attributes' do
+  it 'is valid all required attributes' do
     channel = Channel.new(name: 'My Channel')
     expect(channel).to be_valid
   end
 
-  it 'cannot be valid without a name' do
+  it 'must have a name' do
     channel = Channel.new(name: nil)
     expect(channel).to_not be_valid
   end

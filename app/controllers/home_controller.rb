@@ -4,6 +4,10 @@ class HomeController < ApplicationController
   def index
     channels = Channel.all
     discussions = Discussion.preload(:user, :channel).order(created_at: :desc)
-    render :index, locals: { channels:, discussions: }
+
+    render inertia: 'Home/Index', props: {
+      channels: channels.as_json,
+      discussions: discussions.as_json
+    }
   end
 end

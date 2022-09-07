@@ -67,6 +67,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "webdrivers"
+  gem 'database_cleaner-active_record'
+
 end
 
 gem "devise", "~> 4.8"
@@ -75,6 +77,6 @@ gem "discard", "~> 1.2"
 
 gem "friendly_id", "~> 5.4"
 
-
-
 gem "vite_rails", "~> 3.0"
+
+gem "inertia_rails", "~> 2.0"
