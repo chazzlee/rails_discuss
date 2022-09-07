@@ -1,2 +1,17 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<h1>Rails Discuss</h1>
+<ul>
+  <% channels.each do |channel| %>
+    <li><%= channel.name %></li>
+  <% end %>
+</ul>
+
+<% discussions.each do |discussion| %>
+  <div style="border:1px solid #000;">
+    <h2><%= discussion.title.truncate(30) %></h2>
+    <p><%= discussion.body.truncate(100) %></p>
+    <p>channel: <%= discussion.channel.name %></p>
+    <p>posted by: <%= discussion.user.username %></p>
+    <span><%= time_ago_in_words(discussion.created_at) %> ago</span>
+    <span>views: <%= discussion.views %></span>
+  </div>
+<% end %>
