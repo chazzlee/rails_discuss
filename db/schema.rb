@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_07_194126) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_07_201154) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,22 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_07_194126) do
     t.index ["discarded_at"], name: "index_channels_on_discarded_at"
     t.index ["name"], name: "index_channels_on_name", unique: true
     t.index ["slug"], name: "index_channels_on_slug", unique: true
+  end
+
+  create_table "discussions", force: :cascade do |t|
+    t.string "title"
+    t.text "body"
+    t.integer "views", default: 0, null: false
+    t.bigint "user_id", null: false
+    t.bigint "channel_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
+    t.string "slug"
+    t.index ["channel_id"], name: "index_discussions_on_channel_id"
+    t.index ["discarded_at"], name: "index_discussions_on_discarded_at"
+    t.index ["slug"], name: "index_discussions_on_slug", unique: true
+    t.index ["user_id"], name: "index_discussions_on_user_id"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -54,4 +70,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_07_194126) do
     t.index ["slug"], name: "index_users_on_slug", unique: true
   end
 
+  add_foreign_key "discussions", "channels"
+  add_foreign_key "discussions", "users"
 end

@@ -58,6 +58,8 @@ group :development do
   gem "better_errors"
 
   gem "binding_of_caller"
+
+  gem "faker", "~> 2.23"
 end
 
 group :test do
@@ -72,3 +74,5 @@ gem "devise", "~> 4.8"
 gem "discard", "~> 1.2"
 
 gem "friendly_id", "~> 5.4"
+
+

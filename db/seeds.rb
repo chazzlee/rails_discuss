@@ -1,7 +1,25 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+# frozen_string_literal: true
+
+require 'faker'
+
+channel_names = %w[Development Ruby Javascript Adult General]
+channel_names.each do |channel_name|
+  Channel.create!(name: channel_name)
+end
+
+5.times do
+  user = User.create!(
+    username: Faker::Internet.unique.username,
+    email: Faker::Internet.unique.free_email,
+    password: 'password'
+  )
+
+  5.times do
+    Discussion.create!(
+      title: Faker::Quote.matz,
+      body: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex, laborum! Ipsam sunt dolorem esse corrupti numquam et quod quis tenetur sed minima asperiores nemo fuga illum fugit nisi, explicabo, minus veniam dicta ratione porro, molestias excepturi vitae! Similique, fuga natus?',
+      user_id: user.id,
+      channel_id: Channel.all.sample.id
+    )
+  end
+end
