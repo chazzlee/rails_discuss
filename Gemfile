@@ -70,3 +70,5 @@ end
 gem "devise", "~> 4.8"
 
 gem "discard", "~> 1.2"
+
+gem "friendly_id", "~> 5.4"
