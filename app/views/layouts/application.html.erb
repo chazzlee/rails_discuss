@@ -6,7 +6,10 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%= vite_react_refresh_tag %>
     <%= stylesheet_link_tag "application" %>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application.tsx', defer: true %>
   </head>
 
   <body>
