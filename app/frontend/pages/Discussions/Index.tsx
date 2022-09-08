@@ -1,5 +1,5 @@
 import React from "react";
-import { PageProps } from "@inertiajs/inertia";
+import { Link } from "@inertiajs/inertia-react";
 
 type User = {
   id: number;
@@ -22,12 +22,13 @@ type Discussion = {
   views: number;
   channel: Channel;
   user: User;
+  show_url: string;
 };
 
-interface IndexProps extends PageProps {
+type IndexProps = {
   channels: Channel[];
   discussions: Discussion[];
-}
+};
 
 export default function HomeIndex({ channels, discussions }: IndexProps) {
   return (
@@ -52,7 +53,11 @@ export default function HomeIndex({ channels, discussions }: IndexProps) {
                 marginBottom: ".4rem",
               }}
             >
-              <h2>{discussion.title.substring(0, 100)}...</h2>
+              <h2>
+                <Link href={discussion.show_url}>
+                  {discussion.title.substring(0, 100)}...
+                </Link>
+              </h2>
               <p>{discussion.body.substring(0, 200)}...</p>
               <p>channel: {discussion.channel.name}</p>
               <p>posted by: {discussion.user.username}</p>

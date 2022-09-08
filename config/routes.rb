@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     registrations: 'auth/registrations'
   }
 
-  get '/home', to: 'home#index'
-  root 'home#index'
+  resources :discussions
+  get '/discussions', to: 'discussions#index'
+  root 'discussions#index'
 end
