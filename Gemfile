@@ -80,3 +80,5 @@ gem "friendly_id", "~> 5.4"
 gem "vite_rails", "~> 3.0"
 
 gem "inertia_rails", "~> 2.0"
+
+gem "closure_tree", "~> 7.4"

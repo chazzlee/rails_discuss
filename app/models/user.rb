@@ -10,5 +10,8 @@ class User < ApplicationRecord
 
   enum :role, { user: 0, moderator: 1, admin: 2 }
 
+  has_many :discussions
+  has_many :replies
+
   validates :username, :email, :password, presence: true
 end

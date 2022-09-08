@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_07_201154) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_07_235729) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,28 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_07_201154) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "replies", force: :cascade do |t|
+    t.text "body"
+    t.bigint "user_id", null: false
+    t.string "repliable_type", null: false
+    t.bigint "repliable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
+    t.integer "parent_id"
+    t.index ["discarded_at"], name: "index_replies_on_discarded_at"
+    t.index ["repliable_type", "repliable_id"], name: "index_replies_on_repliable"
+    t.index ["user_id"], name: "index_replies_on_user_id"
+  end
+
+  create_table "reply_hierarchies", id: false, force: :cascade do |t|
+    t.integer "ancestor_id", null: false
+    t.integer "descendant_id", null: false
+    t.integer "generations", null: false
+    t.index ["ancestor_id", "descendant_id", "generations"], name: "reply_anc_desc_idx", unique: true
+    t.index ["descendant_id"], name: "reply_desc_idx"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -72,4 +94,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_07_201154) do
 
   add_foreign_key "discussions", "channels"
   add_foreign_key "discussions", "users"
+  add_foreign_key "replies", "users"
 end

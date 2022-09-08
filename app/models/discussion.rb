@@ -4,6 +4,7 @@ class Discussion < ApplicationRecord
 
   belongs_to :user
   belongs_to :channel
+  has_many :replies, as: :repliable
 
   validates :title, :body, :user, :channel, presence: true
 end
