@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "@inertiajs/inertia-react";
-import type { Channel, Discussion, User } from "../../types";
+import type { Channel, Discussion } from "../../types";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { MainLayout } from "../../components/MainLayout";
 
@@ -8,16 +8,9 @@ type IndexProps = {
   channels: Channel[];
   discussions: Discussion[];
   new_path: string;
-  current_user: User;
 };
 
-export default function Index({
-  channels,
-  discussions,
-  new_path,
-  current_user,
-}: IndexProps) {
-  console.log(current_user);
+export default function Index({ channels, discussions, new_path }: IndexProps) {
   return (
     <MainLayout>
       <h1>Rails Discuss</h1>

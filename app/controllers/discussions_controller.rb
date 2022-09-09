@@ -16,7 +16,6 @@ class DiscussionsController < ApplicationController
                        ]
                      ).merge(show_path: discussion_path(discussion))
                    end,
-      current_user:,
       new_path: new_discussion_path
     }
   end
@@ -65,9 +64,8 @@ class DiscussionsController < ApplicationController
   end
 
   def create
-    p params
     discussion = Discussion.new(discussion_params)
-    discussion.user = User.first # FIXME: should be auth user, just temporary for now
+    discussion.user = current_user
 
     if discussion.save
       redirect_to discussion_url(discussion)
