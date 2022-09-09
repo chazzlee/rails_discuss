@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   include Discard::Model
   include FriendlyId
@@ -13,5 +15,5 @@ class User < ApplicationRecord
   has_many :discussions
   has_many :replies
 
-  validates :username, :email, :password, presence: true
+  # validates :username, :email, :password, presence: true
 end

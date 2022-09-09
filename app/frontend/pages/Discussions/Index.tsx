@@ -1,38 +1,25 @@
 import React from "react";
 import { Link } from "@inertiajs/inertia-react";
-
-type User = {
-  id: number;
-  username: string;
-  email: string;
-};
-
-type Channel = {
-  id: number;
-  name: string;
-  slug: string;
-};
-
-type Discussion = {
-  id: number;
-  title: string;
-  body: string;
-  slug: string;
-  created_at: string;
-  views: number;
-  channel: Channel;
-  user: User;
-  show_url: string;
-};
+import type { Channel, Discussion, User } from "../../types";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { MainLayout } from "../../components/MainLayout";
 
 type IndexProps = {
   channels: Channel[];
   discussions: Discussion[];
+  new_path: string;
+  current_user: User;
 };
 
-export default function HomeIndex({ channels, discussions }: IndexProps) {
+export default function Index({
+  channels,
+  discussions,
+  new_path,
+  current_user,
+}: IndexProps) {
+  console.log(current_user);
   return (
-    <div>
+    <MainLayout>
       <h1>Rails Discuss</h1>
 
       <div className="channel-list">
@@ -42,6 +29,12 @@ export default function HomeIndex({ channels, discussions }: IndexProps) {
           ))}
         </ul>
       </div>
+      <Link
+        href={new_path}
+        style={{ padding: "8px 6px", background: "blue", color: "white" }}
+      >
+        Create new discussion
+      </Link>
       <div>
         <div>
           {discussions.map((discussion) => (
@@ -54,18 +47,24 @@ export default function HomeIndex({ channels, discussions }: IndexProps) {
               }}
             >
               <h2>
-                <Link href={discussion.show_url}>
+                <Link href={discussion.show_path}>
                   {discussion.title.substring(0, 100)}...
                 </Link>
               </h2>
               <p>{discussion.body.substring(0, 200)}...</p>
               <p>channel: {discussion.channel.name}</p>
               <p>posted by: {discussion.user.username}</p>
+              <span>
+                {formatDistanceToNow(parseISO(discussion.created_at), {
+                  addSuffix: true,
+                })}
+              </span>{" "}
+              <span> | </span>
               <span>views: {discussion.views}</span>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
