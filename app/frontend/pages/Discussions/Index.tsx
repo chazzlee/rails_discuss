@@ -1,27 +1,18 @@
 import React from "react";
-import { Link } from "@inertiajs/inertia-react";
-import type { Channel, Discussion } from "../../types";
+import { Link, usePage } from "@inertiajs/inertia-react";
+import type { Discussion } from "../../types";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { MainLayout } from "../../components/MainLayout";
 
 type IndexProps = {
-  channels: Channel[];
   discussions: Discussion[];
   new_path: string;
 };
 
-export default function Index({ channels, discussions, new_path }: IndexProps) {
+export default function Index({ discussions, new_path }: IndexProps) {
   return (
     <MainLayout>
       <h1>Rails Discuss</h1>
-
-      <div className="channel-list">
-        <ul>
-          {channels.map((channel) => (
-            <li key={channel.id}>{channel.name}</li>
-          ))}
-        </ul>
-      </div>
       <Link
         href={new_path}
         style={{ padding: "8px 6px", background: "blue", color: "white" }}

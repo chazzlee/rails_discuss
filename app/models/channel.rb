@@ -5,4 +5,5 @@ class Channel < ApplicationRecord
   friendly_id :name, use: :slugged
 
   validates :name, presence: true, length: { maximum: 20 }
+  has_many :discussions
 end

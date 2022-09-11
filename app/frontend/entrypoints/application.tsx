@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/inertia-react";
 import { InertiaProgress } from "@inertiajs/progress";
+import { MantineProvider } from "@mantine/core";
 
 const currentPath = window.location.pathname;
 if (!currentPath.startsWith("/auth")) {
@@ -11,7 +12,9 @@ if (!currentPath.startsWith("/auth")) {
       const root = createRoot(el);
       root.render(
         <React.StrictMode>
-          <App {...props} />
+          <MantineProvider withGlobalStyles withNormalizeCSS>
+            <App {...props} />
+          </MantineProvider>
         </React.StrictMode>
       );
     },

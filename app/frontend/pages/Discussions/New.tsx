@@ -1,6 +1,5 @@
-import React, { useState, type ChangeEvent, type FormEvent } from "react";
-import { Inertia } from "@inertiajs/inertia";
-// import { useForm } from "@inertiajs/inertia-react";
+import React, { type ChangeEvent, type FormEvent } from "react";
+import { useForm } from "@inertiajs/inertia-react";
 import type { Channel } from "../../types";
 import { MainLayout } from "../../components/MainLayout";
 
@@ -11,13 +10,7 @@ type NewProps = {
 };
 
 export default function New({ channels, create_path, _token }: NewProps) {
-  // const { data, setData, post, errors, processing } = useForm({
-  //   title: "",
-  //   body: "",
-  //   channel: "",
-  // });
-
-  const [values, setValues] = useState({
+  const { data, setData, post, errors, processing, transform } = useForm({
     title: "",
     body: "",
     channel: "",
@@ -26,23 +19,23 @@ export default function New({ channels, create_path, _token }: NewProps) {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const discussion = {
-      title: values.title,
-      body: values.body,
-      channel_id: parseInt(values.channel, 10),
+    transform((data) => ({
+      ...data,
+      channel_id: parseInt(data.channel, 10),
       authenticity_token: _token,
-    };
-    Inertia.post(create_path, discussion);
+    }));
+    post(create_path);
   };
 
   return (
     <MainLayout>
       <h1>Create new discussion!</h1>
+      {errors && JSON.stringify(errors)}
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="title">Title</label>
@@ -50,7 +43,7 @@ export default function New({ channels, create_path, _token }: NewProps) {
             type="text"
             name="title"
             id="title"
-            value={values.title}
+            value={data.title}
             onChange={handleChange}
           />
         </div>
@@ -59,7 +52,7 @@ export default function New({ channels, create_path, _token }: NewProps) {
           <textarea
             name="body"
             id="body"
-            value={values.body}
+            value={data.body}
             onChange={handleChange}
           />
         </div>
@@ -67,9 +60,10 @@ export default function New({ channels, create_path, _token }: NewProps) {
         <select
           name="channel"
           id="channels"
-          value={values.channel}
+          value={data.channel}
           onChange={handleChange}
         >
+          <option key="default">Select a channel</option>
           {channels.map((channel) => (
             <option key={channel.id} value={channel.id}>
               {channel.name}
@@ -77,7 +71,9 @@ export default function New({ channels, create_path, _token }: NewProps) {
           ))}
         </select>
         <div>
-          <button type="submit">Create</button>
+          <button type="submit" disabled={processing}>
+            Create
+          </button>
         </div>
       </form>
     </MainLayout>

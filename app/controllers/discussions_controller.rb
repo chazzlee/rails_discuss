@@ -2,20 +2,23 @@
 
 class DiscussionsController < ApplicationController
   def index
-    channels = Channel.all
-    discussions = Discussion.preload(:user, :channel).order(created_at: :desc)
+    if params[:channel].nil? || params[:channel] == 'all'
+      discussions = Discussion.preload(:user, :channel).order(created_at: :desc)
+    else
+      channel = Channel.preload(:discussions).friendly.find(params[:channel])
+      discussions = channel.discussions.order(created_at: :desc)
+    end
 
     render inertia: 'Discussions/Index', props: {
-      channels: channels.as_json(only: %i[id name slug]),
       discussions: discussions.map do |discussion|
-                     discussion.as_json(
-                       only: %i[id created_at views slug title body],
-                       include: [
-                         user: { only: %i[id username email] },
-                         channel: { only: %i[id name slug] }
-                       ]
-                     ).merge(show_path: discussion_path(discussion))
-                   end,
+        discussion.as_json(
+          only: %i[id created_at views slug title body],
+          include: [
+            user: { only: %i[id username email] },
+            channel: { only: %i[id name slug] }
+          ]
+        ).merge(show_path: discussion_path(discussion))
+      end,
       new_path: new_discussion_path
     }
   end
@@ -50,7 +53,9 @@ class DiscussionsController < ApplicationController
           { user: { only: %i[id username email] } }
         ]
       ),
-      replies:
+      replies:,
+      replies_path:,
+      _token: form_authenticity_token
     }
   end
 
@@ -70,7 +75,7 @@ class DiscussionsController < ApplicationController
     if discussion.save
       redirect_to discussion_url(discussion)
     else
-      redirect_to discussions_url, status: :unprocessable_entity
+      redirect_to new_discussion_url, status: :unprocessable_entity
     end
   end
 
