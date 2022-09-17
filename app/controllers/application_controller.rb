@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  # TODO:
+
   inertia_share do
-    { current_user: } if user_signed_in?
+    { currentUser: UserBlueprint.render_as_json(current_user, root: :data) } if user_signed_in?
   end
 
-  inertia_share channels: Channel.all.as_json(only: %i[id name slug])
+  inertia_share channels: ChannelBlueprint.render_as_json(Channel.all, root: :data)
 end

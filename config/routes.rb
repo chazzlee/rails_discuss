@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   }
 
   get '/discussions/new', to: 'discussions#new', as: :new_discussion
-  # post '/discussions', to: 'discussions#create', as: :discussions
+  post '/discussions', to: 'discussions#create', as: :discussions
 
   resources :channels, only: [:index] do
     resources :discussions, only: %i[index show create], shallow: true do

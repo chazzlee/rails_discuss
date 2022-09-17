@@ -1,20 +1,28 @@
 import React, { type ChangeEvent, type FormEvent } from "react";
-import { useForm } from "@inertiajs/inertia-react";
+import { useForm, usePage } from "@inertiajs/inertia-react";
 import type { Channel } from "../../types";
 import { MainLayout } from "../../components/MainLayout";
 
 type NewProps = {
-  channels: Channel[];
-  discussions_path: string;
+  discussionsPath: string;
   _token: string;
 };
 
-export default function New({ channels, discussions_path, _token }: NewProps) {
-  const { data, setData, post, errors, processing, transform } = useForm({
+export default function New({ discussionsPath, _token }: NewProps) {
+  const {
+    data: formData,
+    setData,
+    post,
+    errors,
+    processing,
+    transform,
+  } = useForm({
     title: "",
     body: "",
     channel: "",
   });
+
+  const pageProps = usePage().props;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -29,7 +37,7 @@ export default function New({ channels, discussions_path, _token }: NewProps) {
       channel_id: parseInt(data.channel, 10),
       authenticity_token: _token,
     }));
-    post(discussions_path);
+    post(discussionsPath);
   };
 
   return (
@@ -43,7 +51,7 @@ export default function New({ channels, discussions_path, _token }: NewProps) {
             type="text"
             name="title"
             id="title"
-            value={data.title}
+            value={formData.title}
             onChange={handleChange}
           />
         </div>
@@ -52,7 +60,7 @@ export default function New({ channels, discussions_path, _token }: NewProps) {
           <textarea
             name="body"
             id="body"
-            value={data.body}
+            value={formData.body}
             onChange={handleChange}
           />
         </div>
@@ -60,11 +68,11 @@ export default function New({ channels, discussions_path, _token }: NewProps) {
         <select
           name="channel"
           id="channels"
-          value={data.channel}
+          value={formData.channel}
           onChange={handleChange}
         >
           <option key="default">Select a channel</option>
-          {channels.map((channel) => (
+          {(pageProps as any).channels.data.map((channel) => (
             <option key={channel.id} value={channel.id}>
               {channel.name}
             </option>

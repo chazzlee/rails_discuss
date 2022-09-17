@@ -6,14 +6,14 @@ import { ReplyCard } from "./ReplyCard";
 type RepliesListProps = {
   replies: Reply[];
   _token: string;
-  discussion_replies_path: string;
+  replyLink: string;
   discussionId: number;
 };
 export function RepliesList({
   replies,
   _token,
   discussionId,
-  discussion_replies_path,
+  replyLink,
 }: RepliesListProps) {
   return (
     <div>
@@ -23,7 +23,7 @@ export function RepliesList({
           reply={reply}
           _token={_token}
           discussionId={discussionId}
-          discussion_replies_path={discussion_replies_path}
+          replyLink={replyLink}
         />
       ))}
     </div>

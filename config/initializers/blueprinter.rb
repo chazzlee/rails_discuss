@@ -3,5 +3,5 @@
 require 'oj'
 
 Blueprinter.configure do |config|
-  config.generater = Oj
+  config.generator = Oj
 end

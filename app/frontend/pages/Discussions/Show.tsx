@@ -9,22 +9,24 @@ import { useDisclosure } from "@mantine/hooks";
 
 type ShowProps = {
   current_user?: User;
-  discussion: Discussion;
+  data: {
+    discussion: Discussion;
+  };
   replies: Reply[];
-  discussion_replies_path: string;
   _token: string;
 };
 
-export default function Show({
-  current_user,
-  discussion,
-  replies,
-  discussion_replies_path,
-  _token,
-}: ShowProps) {
+export default function Show({ current_user, data, _token }: ShowProps) {
   const [opened, handlers] = useDisclosure(false);
 
-  const { data, setData, post, errors, processing, transform } = useForm({
+  const {
+    data: formData,
+    setData,
+    post,
+    errors,
+    processing,
+    transform,
+  } = useForm({
     body: "",
   });
 
@@ -32,16 +34,18 @@ export default function Show({
     setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const { discussion } = data;
+
   return (
     <MainLayout>
       <Link href="/">Go home</Link>
-      <h1>{discussion.title}</h1>
+      <h1>{discussion?.title}</h1>
       <p>discussion_id: {discussion.id}</p>
-      <p>{discussion.body}</p>
+      <p>{discussion?.body}</p>
       <p>channel: {discussion.channel.name}</p>
       <p>posted by: {discussion.user.username}</p>
       <span>
-        {formatDistanceToNow(parseISO(discussion.created_at), {
+        {formatDistanceToNow(parseISO(discussion.createdAt), {
           addSuffix: true,
         })}
       </span>{" "}
@@ -50,10 +54,10 @@ export default function Show({
       <div>
         <h3>REPLIES</h3>
         <RepliesList
-          replies={replies}
-          _token={_token}
-          discussion_replies_path={discussion_replies_path}
+          replies={discussion.replies}
+          replyLink={discussion.replyLink}
           discussionId={discussion.id}
+          _token={_token}
         />
         {!opened ? (
           <Button type="button" onClick={handlers.open}>
@@ -68,12 +72,12 @@ export default function Show({
                 return;
               }
 
-              transform((data) => ({
-                ...data,
+              transform((formData) => ({
+                ...formData,
                 repliable_id: discussion.id,
                 authenticity_token: _token,
               }));
-              post(discussion_replies_path, {
+              post(discussion.replyLink, {
                 onSuccess: () => {
                   handlers.close();
                 },
@@ -85,7 +89,7 @@ export default function Show({
               placeholder="Write a reply..."
               label="reply"
               name="body"
-              value={data.body}
+              value={formData.body}
               onChange={handleChange}
             />
             <Button type="button" onClick={handlers.close}>

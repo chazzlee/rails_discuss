@@ -10,14 +10,14 @@ type ReplyCardProps = {
   reply: Reply;
   _token: string;
   discussionId: number;
-  discussion_replies_path: string;
+  replyLink: string;
 };
 
 export function ReplyCard({
   reply,
   _token,
   discussionId,
-  discussion_replies_path,
+  replyLink,
 }: ReplyCardProps) {
   const [opened, handlers] = useDisclosure(false);
   const { current_user } = usePage().props;
@@ -45,7 +45,7 @@ export function ReplyCard({
       parent_id: reply.id,
     }));
 
-    post(discussion_replies_path, {
+    post(replyLink, {
       onSuccess: () => {
         handlers.close();
       },
@@ -64,9 +64,9 @@ export function ReplyCard({
     >
       <p>reply ID: {reply.id}</p>
       <p>{reply.body}</p>
-      <p>posted by: {reply.user}</p>
+      <p>posted by: {reply.user.username}</p>
       <p>
-        {formatDistanceToNow(parseISO(reply.created_at), {
+        {formatDistanceToNow(parseISO(reply.createdAt), {
           addSuffix: true,
         })}
       </p>
@@ -95,9 +95,9 @@ export function ReplyCard({
       {reply.replies.length > 0 ? (
         <RepliesList
           replies={reply.replies}
-          _token={_token}
           discussionId={discussionId}
-          discussion_replies_path={discussion_replies_path}
+          replyLink={replyLink}
+          _token={_token}
         />
       ) : null}
     </div>

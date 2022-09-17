@@ -15,7 +15,7 @@ import {
 import { Header } from "@mantine/core";
 
 import type { Channel, User } from "../types";
-import { Inertia } from "@inertiajs/inertia";
+import { Inertia, Page } from "@inertiajs/inertia";
 
 type MainLayoutProps = {
   children: ReactNode;
@@ -29,11 +29,9 @@ const getActiveChannel = (): string => {
 };
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { current_user, channels } = usePage().props;
-  // console.log(current_user);
-
+  const pageProps = usePage().props;
   const logoutFormRef = useRef<HTMLFormElement>(null);
-
+  console.log(pageProps);
   return (
     <AppShell
       header={
@@ -44,10 +42,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                 <Link href="/">Rails Discuss</Link>
               </Text>
               {/* <Burger opened={false} /> */}
-              {current_user ? (
+              {pageProps.currentUser.data.username ? (
                 <Menu width={260} position="bottom-end">
                   <Menu.Target>
-                    <Button size="sm">{(current_user as User).username}</Button>
+                    <Button size="sm">
+                      {pageProps.currentUser.data.username}
+                    </Button>
                   </Menu.Target>
                   {/* FIXME:  FIX zindex? */}
                   <Menu.Dropdown>
@@ -112,7 +112,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           <Tabs.Tab key={"all-discussions"} value={"all"}>
             All Discussions
           </Tabs.Tab>
-          {(channels as Channel[]).map((channel) => (
+          {(pageProps as any).channels.data.map((channel) => (
             <Tabs.Tab key={channel.id} value={channel.slug}>
               {channel.name}
             </Tabs.Tab>
