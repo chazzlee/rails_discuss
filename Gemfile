@@ -82,3 +82,7 @@ gem "vite_rails", "~> 3.0"
 gem "inertia_rails", "~> 2.0"
 
 gem "closure_tree", "~> 7.4"
+
+gem "blueprinter", "~> 0.25.3"
+
+gem "oj", "~> 3.13"
