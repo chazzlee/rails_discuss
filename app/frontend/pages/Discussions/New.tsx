@@ -5,11 +5,11 @@ import { MainLayout } from "../../components/MainLayout";
 
 type NewProps = {
   channels: Channel[];
-  create_path: string;
+  discussions_path: string;
   _token: string;
 };
 
-export default function New({ channels, create_path, _token }: NewProps) {
+export default function New({ channels, discussions_path, _token }: NewProps) {
   const { data, setData, post, errors, processing, transform } = useForm({
     title: "",
     body: "",
@@ -29,7 +29,7 @@ export default function New({ channels, create_path, _token }: NewProps) {
       channel_id: parseInt(data.channel, 10),
       authenticity_token: _token,
     }));
-    post(create_path);
+    post(discussions_path);
   };
 
   return (

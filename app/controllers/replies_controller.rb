@@ -4,17 +4,29 @@ class RepliesController < ApplicationController
   before_action :authenticate_user!, only: [:create]
 
   def create
-    # repliable = Discussion.find(params[:repliable_id])
-    p params
-    # reply = Reply.new(reply_params)
-    # reply.user = current_user
-    # reply.repliable = repliable
+    # Replying to root discussion
+    discussion = Discussion.friendly.find(params[:discussion_id])
 
-    # if reply.save
-    #   redirect_to discussion_path(repliable)
-    # else
-    #   redirect_to discussion_url(repliable), status: :unprocessable_entity
-    # end
+    if params[:parent_id].nil?
+      reply = Reply.new(reply_params)
+      reply.user = current_user
+      reply.repliable = discussion
+    else
+      # Replying to reply
+      puts 'replying to reply'
+
+      repliable = Reply.find(params[:repliable_id])
+      reply = Reply.new(reply_params)
+      reply.user = current_user
+      reply.repliable = repliable
+      reply.parent = repliable
+    end
+
+    if reply.save
+      redirect_to discussion_url(discussion)
+    else
+      redirect_to discussion_url(discussion), status: :unprocessable_entity
+    end
   end
 
   private

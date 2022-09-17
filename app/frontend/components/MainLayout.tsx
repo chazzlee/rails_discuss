@@ -30,7 +30,7 @@ const getActiveChannel = (): string => {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const { current_user, channels } = usePage().props;
-  console.log(current_user);
+  // console.log(current_user);
 
   const logoutFormRef = useRef<HTMLFormElement>(null);
 
@@ -105,7 +105,7 @@ export function MainLayout({ children }: MainLayoutProps) {
     >
       <Tabs
         value={getActiveChannel()}
-        onTabChange={(value) => Inertia.get(`/discussions/channels/${value}`)}
+        onTabChange={(value) => Inertia.get(`/channels/${value}/discussions`)} //TODO: get links from rails?
         mb="xl"
       >
         <Tabs.List grow>

@@ -2,10 +2,10 @@
 
 class DiscussionsController < ApplicationController
   def index
-    if params[:channel].nil? || params[:channel] == 'all'
+    if params[:channel_id].nil? || params[:channel_id] == 'all'
       discussions = Discussion.preload(:user, :channel).order(created_at: :desc)
     else
-      channel = Channel.preload(:discussions).friendly.find(params[:channel])
+      channel = Channel.preload(:discussions).friendly.find(params[:channel_id])
       discussions = channel.discussions.order(created_at: :desc)
     end
 
@@ -19,7 +19,7 @@ class DiscussionsController < ApplicationController
           ]
         ).merge(show_path: discussion_path(discussion))
       end,
-      new_path: new_discussion_path
+      new_discussion_path:
     }
   end
 
@@ -54,7 +54,7 @@ class DiscussionsController < ApplicationController
         ]
       ),
       replies:,
-      replies_path:,
+      discussion_replies_path: discussion_replies_path(discussion),
       _token: form_authenticity_token
     }
   end
@@ -63,7 +63,7 @@ class DiscussionsController < ApplicationController
     channels = Channel.select(:id, :name, :slug)
     render inertia: 'Discussions/New', props: {
       channels: channels.as_json,
-      create_path: discussions_path,
+      discussions_path:,
       _token: form_authenticity_token
     }
   end

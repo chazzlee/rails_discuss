@@ -1,20 +1,23 @@
 import React from "react";
-import { Link, usePage } from "@inertiajs/inertia-react";
+import { Link } from "@inertiajs/inertia-react";
 import type { Discussion } from "../../types";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { MainLayout } from "../../components/MainLayout";
 
 type IndexProps = {
   discussions: Discussion[];
-  new_path: string;
+  new_discussion_path: string;
 };
 
-export default function Index({ discussions, new_path }: IndexProps) {
+export default function Index({
+  discussions,
+  new_discussion_path,
+}: IndexProps) {
   return (
     <MainLayout>
       <h1>Rails Discuss</h1>
       <Link
-        href={new_path}
+        href={new_discussion_path}
         style={{ padding: "8px 6px", background: "blue", color: "white" }}
       >
         Create new discussion
