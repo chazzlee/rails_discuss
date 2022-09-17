@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DiscussionsController < ApplicationController
+  before_action :authenticate_user!, only: %i[new create] # TODO: redirect to login page if not authenticated
+
   def index
     if params[:channel_id].nil? || params[:channel_id] == 'all'
       discussions = Discussion.preload(:user, :channel).order(created_at: :desc)
