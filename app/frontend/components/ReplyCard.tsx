@@ -1,16 +1,22 @@
-import React, { type ChangeEvent, type FormEvent } from "react";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import type { Reply } from "../types";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { Inertia } from "@inertiajs/inertia";
 import { Button, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useForm, usePage } from "@inertiajs/inertia-react";
 import { RepliesList } from "./RepliesList";
+import { formatDateForDisplay } from "../utils/formatDateForDisplay";
+import type { Reply } from "../types";
+import { useSharedPageProps } from "../hooks/useSharedPageProps";
 
 type ReplyCardProps = {
   reply: Reply;
   _token: string;
   discussionId: number;
   replyLink: string;
+};
+
+type NewReplyFormData = {
+  body: string;
 };
 
 export function ReplyCard({
@@ -20,35 +26,28 @@ export function ReplyCard({
   replyLink,
 }: ReplyCardProps) {
   const [opened, handlers] = useDisclosure(false);
-  const { current_user } = usePage().props;
+  const { currentUser } = useSharedPageProps();
 
-  const { data, setData, post, errors, processing, transform } = useForm({
-    body: "",
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<NewReplyFormData>();
 
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!current_user) {
-      console.log("must login first");
+  const onSubmit = (formData: NewReplyFormData) => {
+    if (!currentUser) {
       return;
     }
-    transform((data) => ({
-      ...data,
-      repliable_id: reply.id,
-      authenticity_token: _token,
-      discussion_id: discussionId,
-      parent_id: reply.id,
-    }));
 
-    post(replyLink, {
-      onSuccess: () => {
-        handlers.close();
-      },
+    const newReply = {
+      ...formData,
+      repliable_id: reply.id,
+      parent_id: reply.id,
+      discussion_id: discussionId,
+      authenticity_token: _token,
+    };
+    Inertia.post(replyLink, newReply, {
+      onSuccess: () => handlers.close(),
       preserveScroll: true,
     });
   };
@@ -65,27 +64,17 @@ export function ReplyCard({
       <p>reply ID: {reply.id}</p>
       <p>{reply.body}</p>
       <p>posted by: {reply.user.username}</p>
-      <p>
-        {formatDistanceToNow(parseISO(reply.createdAt), {
-          addSuffix: true,
-        })}
-      </p>
+      <p>{formatDateForDisplay(reply.createdAt)}</p>
       {!opened ? (
         <Button onClick={handlers.open}>Reply</Button>
       ) : (
         <div>
-          <form onSubmit={handleSubmit}>
-            <Textarea
-              placeholder="Write a reply..."
-              label="reply"
-              name="body"
-              value={data.body}
-              onChange={handleChange}
-            />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Textarea placeholder="Write a reply..." {...register("body")} />
             <Button type="button" onClick={handlers.close}>
               Cancel
             </Button>
-            <Button type="submit" disabled={processing}>
+            <Button type="submit" disabled={isSubmitting}>
               Submit
             </Button>
           </form>

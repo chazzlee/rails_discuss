@@ -1,5 +1,5 @@
 import React, { useRef, type ReactNode } from "react";
-import { Link, usePage } from "@inertiajs/inertia-react";
+import { Link } from "@inertiajs/inertia-react";
 import {
   AppShell,
   Aside,
@@ -9,47 +9,45 @@ import {
   MediaQuery,
   Menu,
   Navbar,
-  Tabs,
   Text,
 } from "@mantine/core";
 import { Header } from "@mantine/core";
 
-import type { Channel, User } from "../types";
-import { Inertia, Page } from "@inertiajs/inertia";
+import { useSharedPageProps } from "../hooks/useSharedPageProps";
 
 type MainLayoutProps = {
   children: ReactNode;
+  newDiscussionLink?: string;
+  onShowReplyForm?(): void;
 };
 
 // TODO: move to function later
 const _token = document.getElementsByTagName("meta")[2].getAttribute("content");
-const getActiveChannel = (): string => {
-  const [_, _channels, pathName] = window.location.pathname.split("/");
-  return pathName;
-};
 
-export function MainLayout({ children }: MainLayoutProps) {
-  const pageProps = usePage().props;
+export function MainLayout({
+  children,
+  newDiscussionLink,
+  onShowReplyForm,
+}: MainLayoutProps) {
+  const { currentUser } = useSharedPageProps();
   const logoutFormRef = useRef<HTMLFormElement>(null);
-  console.log(pageProps);
+
   return (
     <AppShell
+      sx={{ backgroundColor: "#F8F9FA" }}
       header={
-        <Header height={70} p="md" style={{ backgroundColor: "#F8F9FA" }}>
+        <Header height={70} p="md" sx={{ backgroundColor: "#F8F9FA" }}>
           <Container size="xl" pb="sm" mb="sm">
             <Group position="apart" align="center">
               <Text size="md" weight={500}>
                 <Link href="/">Rails Discuss</Link>
               </Text>
               {/* <Burger opened={false} /> */}
-              {pageProps.currentUser.data.username ? (
+              {currentUser ? (
                 <Menu width={260} position="bottom-end">
                   <Menu.Target>
-                    <Button size="sm">
-                      {pageProps.currentUser.data.username}
-                    </Button>
+                    <Button size="sm">{currentUser.data.username}</Button>
                   </Menu.Target>
-                  {/* FIXME:  FIX zindex? */}
                   <Menu.Dropdown>
                     <form
                       action="/auth/sign_out"
@@ -93,6 +91,16 @@ export function MainLayout({ children }: MainLayoutProps) {
           width={{ sm: 200, lg: 400 }}
         >
           <Text>Application navbar</Text>
+          {newDiscussionLink ? (
+            <Button component={Link} href={newDiscussionLink} color="red.6">
+              New Discussion
+            </Button>
+          ) : null}
+          {onShowReplyForm ? (
+            <Button color="red.6" onClick={onShowReplyForm}>
+              Reply to Discussion
+            </Button>
+          ) : null}
         </Navbar>
       }
       aside={
@@ -103,22 +111,6 @@ export function MainLayout({ children }: MainLayoutProps) {
         </MediaQuery>
       }
     >
-      <Tabs
-        value={getActiveChannel()}
-        onTabChange={(value) => Inertia.get(`/channels/${value}/discussions`)} //TODO: get links from rails?
-        mb="xl"
-      >
-        <Tabs.List grow>
-          <Tabs.Tab key={"all-discussions"} value={"all"}>
-            All Discussions
-          </Tabs.Tab>
-          {(pageProps as any).channels.data.map((channel) => (
-            <Tabs.Tab key={channel.id} value={channel.slug}>
-              {channel.name}
-            </Tabs.Tab>
-          ))}
-        </Tabs.List>
-      </Tabs>
       {children}
     </AppShell>
   );

@@ -1,3 +1,8 @@
+export type DataProp<T, M = null> = {
+  data: T;
+  meta?: M;
+};
+
 export type User = {
   username: string;
   email: string;
@@ -22,6 +27,7 @@ export type Discussion = {
   user: User;
   link: string;
   replyLink: string;
+  repliesCount: number;
   replies: Reply[];
 };
 

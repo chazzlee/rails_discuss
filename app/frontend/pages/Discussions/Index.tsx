@@ -1,56 +1,45 @@
 import React from "react";
-import { Link } from "@inertiajs/inertia-react";
-import type { Discussion } from "../../types";
-import { formatDistanceToNow, parseISO } from "date-fns";
+import { Tabs } from "@mantine/core";
+import { Inertia } from "@inertiajs/inertia";
+import type { Channel, DataProp, Discussion } from "../../types";
 import { MainLayout } from "../../components/MainLayout";
+import { DiscussionCard } from "./components/DiscussionCard";
 
 type IndexProps = {
-  discussions: {
-    data: Discussion[];
-    meta: { links: { new: string } };
-  };
+  discussions: DataProp<Discussion[], { links: { new: string } }>;
+  channels: DataProp<Channel[]>;
+};
+// TODO: move out
+const getActiveChannel = (): string => {
+  const [_, _channels, pathName] = window.location.pathname.split("/");
+  return pathName;
 };
 
-export default function Index({ discussions }: IndexProps) {
-  console.log(discussions);
+export default function Index({ discussions, channels }: IndexProps) {
   return (
-    <MainLayout>
-      <h1>Rails Discuss</h1>
-      <Link
-        href={discussions.meta.links.new}
-        style={{ padding: "8px 6px", background: "blue", color: "white" }}
+    <MainLayout newDiscussionLink={discussions.meta?.links.new}>
+      <Tabs
+        value={getActiveChannel() ?? "all"}
+        onTabChange={(value) => Inertia.get(`/channels/${value}/discussions`)} //TODO: get links from rails?
+        mb="xl"
       >
-        Create new discussion
-      </Link>
-      <div>
-        <div>
-          {discussions.data.map((discussion) => (
-            <div
-              key={discussion.id}
-              style={{
-                border: "1px solid #000",
-                padding: "1rem",
-                marginBottom: ".4rem",
-              }}
-            >
-              <h2>
-                <Link href={discussion.link}>
-                  {discussion?.truncatedTitle}...
-                </Link>
-              </h2>
-              <p>{discussion?.truncatedBody}...</p>
-              <p>channel: {discussion.channel.name}</p>
-              <p>posted by: {discussion.user.username}</p>
-              <span>
-                {formatDistanceToNow(parseISO(discussion.createdAt), {
-                  addSuffix: true,
-                })}
-              </span>
-              <span> | </span>
-              <span>views: {discussion.views}</span>
-            </div>
+        <Tabs.List grow>
+          <Tabs.Tab key={"all-discussions"} value={"all"}>
+            All Discussions
+          </Tabs.Tab>
+          {channels.data.map((channel) => (
+            <Tabs.Tab key={channel.id} value={channel.slug}>
+              {channel.name}
+            </Tabs.Tab>
           ))}
-        </div>
+        </Tabs.List>
+      </Tabs>
+      <h1>Rails Discuss</h1>
+      <h2 style={{ textTransform: "capitalize" }}>{getActiveChannel()}</h2>
+      <div>
+        {discussions.data.map((discussion) => (
+          <DiscussionCard key={discussion.id} discussion={discussion} />
+        ))}
       </div>
     </MainLayout>
   );

@@ -41,14 +41,14 @@ class DiscussionsController < ApplicationController
     # end
 
     render inertia: 'Discussions/Show', props: {
-      data: DiscussionBlueprint.render_as_json(discussion, root: :discussion, view: :extended),
+      discussion: DiscussionBlueprint.render_as_json(discussion, root: :data, view: :extended),
       _token: form_authenticity_token
     }
   end
 
   def new
     render inertia: 'Discussions/New', props: {
-      discussionsPath: discussions_path,
+      newDiscussionLink: discussions_path,
       _token: form_authenticity_token
     }
   end

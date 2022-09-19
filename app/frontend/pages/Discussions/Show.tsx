@@ -1,105 +1,100 @@
-import React, { type ChangeEvent } from "react";
-import { Link, useForm } from "@inertiajs/inertia-react";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { Inertia } from "@inertiajs/inertia";
+import { Link } from "@inertiajs/inertia-react";
 import { Button, Textarea } from "@mantine/core";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import type { Discussion, Reply, User } from "../../types";
+import { useDisclosure, useScrollIntoView } from "@mantine/hooks";
+import type { DataProp, Discussion, User } from "../../types";
 import { MainLayout } from "../../components/MainLayout";
 import { RepliesList } from "../../components/RepliesList";
-import { useDisclosure } from "@mantine/hooks";
+import { formatDateForDisplay } from "../../utils/formatDateForDisplay";
 
 type ShowProps = {
-  current_user?: User;
-  data: {
-    discussion: Discussion;
-  };
-  replies: Reply[];
+  discussion: DataProp<Discussion>;
+  currentUser: DataProp<User> | null;
   _token: string;
 };
 
-export default function Show({ current_user, data, _token }: ShowProps) {
+type NewReplyFormData = {
+  body: string;
+};
+
+// TODO: extract form into separate component (see also ReplyCard)
+export default function Show({ discussion, currentUser, _token }: ShowProps) {
   const [opened, handlers] = useDisclosure(false);
+  const { scrollIntoView, scrollableRef, targetRef } =
+    useScrollIntoView<HTMLDivElement>({
+      offset: 60,
+    });
 
   const {
-    data: formData,
-    setData,
-    post,
-    errors,
-    processing,
-    transform,
-  } = useForm({
-    body: "",
-  });
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<NewReplyFormData>();
 
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const onSubmit = (formData: NewReplyFormData) => {
+    if (!currentUser) {
+      return;
+    }
+
+    const newReply = {
+      ...formData,
+      repliable_id: discussion.data.id,
+      authenticity_token: _token,
+    };
+    Inertia.post(discussion.data.replyLink, newReply, {
+      onSuccess: () => handlers.close(),
+      preserveScroll: true,
+    });
   };
 
-  const { discussion } = data;
-
   return (
-    <MainLayout>
-      <Link href="/">Go home</Link>
-      <h1>{discussion?.title}</h1>
-      <p>discussion_id: {discussion.id}</p>
-      <p>{discussion?.body}</p>
-      <p>channel: {discussion.channel.name}</p>
-      <p>posted by: {discussion.user.username}</p>
-      <span>
-        {formatDistanceToNow(parseISO(discussion.createdAt), {
-          addSuffix: true,
-        })}
-      </span>{" "}
-      <span> | </span>
-      <span>views: {discussion.views}</span>
+    <MainLayout
+      onShowReplyForm={() => {
+        // scrollIntoView(); FIXME: form must be shown first...
+        handlers.toggle();
+      }}
+    >
       <div>
-        <h3>REPLIES</h3>
-        <RepliesList
-          replies={discussion.replies}
-          replyLink={discussion.replyLink}
-          discussionId={discussion.id}
-          _token={_token}
-        />
-        {!opened ? (
-          <Button type="button" onClick={handlers.open}>
-            Reply
-          </Button>
-        ) : (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!current_user) {
-                console.log("must login first");
-                return;
-              }
-
-              transform((formData) => ({
-                ...formData,
-                repliable_id: discussion.id,
-                authenticity_token: _token,
-              }));
-              post(discussion.replyLink, {
-                onSuccess: () => {
-                  handlers.close();
-                },
-                preserveScroll: true,
-              });
-            }}
-          >
-            <Textarea
-              placeholder="Write a reply..."
-              label="reply"
-              name="body"
-              value={formData.body}
-              onChange={handleChange}
-            />
-            <Button type="button" onClick={handlers.close}>
-              Cancel
+        <Link href="/">Go home</Link>
+        <h1>{discussion.data.title}</h1>
+        <p>discussion_id: {discussion.data.id}</p>
+        <p>{discussion.data.body}</p>
+        <p>channel: {discussion.data.channel.name}</p>
+        <p>posted by: {discussion.data.user.username}</p>
+        <span>{formatDateForDisplay(discussion.data.createdAt)}</span>{" "}
+        <span> | </span>
+        <span>views: {discussion.data.views}</span>
+        <div>
+          <h3>REPLIES</h3>
+          <RepliesList
+            replies={discussion.data.replies}
+            replyLink={discussion.data.replyLink}
+            discussionId={discussion.data.id}
+            _token={_token}
+          />
+          {!opened ? (
+            <Button type="button" onClick={handlers.open}>
+              Reply
             </Button>
-            <Button type="submit" disabled={processing}>
-              Submit
-            </Button>
-          </form>
-        )}
+          ) : (
+            <div ref={targetRef}>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Textarea
+                  placeholder="Write a reply..."
+                  {...register("body", { required: "Body is required" })}
+                />
+                <Button type="button" onClick={handlers.close}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  Submit
+                </Button>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
     </MainLayout>
   );

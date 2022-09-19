@@ -17,7 +17,14 @@ class Discussion < ApplicationRecord
   end
 
   def truncated_body
-    title.truncate(200)
+    body.truncate(200)
+  end
+
+  def replies_count
+    # TODO: maybe use sql?
+    replies.inject(0) do |total, root_reply|
+      total + root_reply.self_and_descendant_ids.size
+    end
   end
 
   def link

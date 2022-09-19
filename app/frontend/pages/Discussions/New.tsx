@@ -1,85 +1,78 @@
-import React, { type ChangeEvent, type FormEvent } from "react";
-import { useForm, usePage } from "@inertiajs/inertia-react";
-import type { Channel } from "../../types";
+import React from "react";
+import { Inertia } from "@inertiajs/inertia";
+import { useForm } from "react-hook-form";
 import { MainLayout } from "../../components/MainLayout";
+import { Channel, DataProp } from "../../types";
+import { Text } from "@mantine/core";
 
 type NewProps = {
-  discussionsPath: string;
+  channels: DataProp<Channel[]>;
+  newDiscussionLink: string;
   _token: string;
 };
 
-export default function New({ discussionsPath, _token }: NewProps) {
+type NewDiscussionFormData = {
+  title: string;
+  body: string;
+  channel: string;
+};
+export default function New({ channels, newDiscussionLink, _token }: NewProps) {
   const {
-    data: formData,
-    setData,
-    post,
-    errors,
-    processing,
-    transform,
-  } = useForm({
-    title: "",
-    body: "",
-    channel: "",
-  });
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<NewDiscussionFormData>({});
 
-  const pageProps = usePage().props;
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    transform((data) => ({
-      ...data,
-      channel_id: parseInt(data.channel, 10),
+  const onSubmit = (formData: NewDiscussionFormData) => {
+    const newDiscussion = {
+      ...formData,
+      channel_id: parseInt(formData.channel, 10),
       authenticity_token: _token,
-    }));
-    post(discussionsPath);
+    };
+    Inertia.post(newDiscussionLink, newDiscussion);
   };
 
+  console.log(errors);
+  {
+    /* TODO: validations & errors */
+  }
   return (
     <MainLayout>
       <h1>Create new discussion!</h1>
-      {errors && JSON.stringify(errors)}
-      <form onSubmit={handleSubmit}>
+      <Text color="red" size="sm">
+        {errors && errors.title?.message}
+      </Text>
+      <Text color="red" size="sm">
+        {errors && errors.body?.message}
+      </Text>
+      <Text color="red" size="sm">
+        {errors && errors.channel?.message}
+      </Text>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="title">Title</label>
           <input
             type="text"
-            name="title"
-            id="title"
-            value={formData.title}
-            onChange={handleChange}
+            {...register("title", { required: "Title is required" })}
           />
         </div>
         <div>
           <label htmlFor="body">Body</label>
-          <textarea
-            name="body"
-            id="body"
-            value={formData.body}
-            onChange={handleChange}
-          />
+          <textarea {...register("body", { required: "Body is required" })} />
         </div>
         <label htmlFor="channels">Channel</label>
-        <select
-          name="channel"
-          id="channels"
-          value={formData.channel}
-          onChange={handleChange}
-        >
+
+        <select {...register("channel")}>
           <option key="default">Select a channel</option>
-          {(pageProps as any).channels.data.map((channel) => (
+          {channels.data.map((channel) => (
             <option key={channel.id} value={channel.id}>
               {channel.name}
             </option>
           ))}
         </select>
         <div>
-          <button type="submit" disabled={processing}>
+          <button type="submit" disabled={isSubmitting}>
             Create
           </button>
         </div>
