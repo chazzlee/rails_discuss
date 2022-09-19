@@ -1,5 +1,5 @@
 import React from "react";
-import type { Reply } from "../types";
+import type { Reply } from "../../../types";
 
 import { ReplyCard } from "./ReplyCard";
 

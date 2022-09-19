@@ -1,13 +1,13 @@
 import React from "react";
-import { useForm } from "react-hook-form";
 import { Inertia } from "@inertiajs/inertia";
 import { Link } from "@inertiajs/inertia-react";
-import { Button, Textarea } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useDisclosure, useScrollIntoView } from "@mantine/hooks";
 import type { DataProp, Discussion, User } from "../../types";
 import { MainLayout } from "../../components/MainLayout";
-import { RepliesList } from "../../components/RepliesList";
+import { RepliesList } from "./components/RepliesList";
 import { formatDateForDisplay } from "../../utils/formatDateForDisplay";
+import { ReplyForm } from "./components/ReplyForm";
 
 type ShowProps = {
   discussion: DataProp<Discussion>;
@@ -26,12 +26,6 @@ export default function Show({ discussion, currentUser, _token }: ShowProps) {
     useScrollIntoView<HTMLDivElement>({
       offset: 60,
     });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<NewReplyFormData>();
 
   const onSubmit = (formData: NewReplyFormData) => {
     if (!currentUser) {
@@ -80,18 +74,7 @@ export default function Show({ discussion, currentUser, _token }: ShowProps) {
             </Button>
           ) : (
             <div ref={targetRef}>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Textarea
-                  placeholder="Write a reply..."
-                  {...register("body", { required: "Body is required" })}
-                />
-                <Button type="button" onClick={handlers.close}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  Submit
-                </Button>
-              </form>
+              <ReplyForm onSubmit={onSubmit} onCancel={handlers.close} />
             </div>
           )}
         </div>

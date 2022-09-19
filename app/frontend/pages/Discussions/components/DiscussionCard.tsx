@@ -34,8 +34,10 @@ export function DiscussionCard({ discussion }: DiscussionCardProps) {
           </Box>
           <Text>{discussion?.truncatedBody}</Text>
           <Box sx={{ display: "flex" }}>
-            <Text color="red.6">{discussion.user.username}</Text>
-            <Text>{formatDateForDisplay(discussion.createdAt)}</Text>
+            <Text size="sm" color="red.6">
+              {discussion.user.username}
+            </Text>
+            <Text size="sm">{formatDateForDisplay(discussion.createdAt)}</Text>
           </Box>
         </Box>
       </Box>

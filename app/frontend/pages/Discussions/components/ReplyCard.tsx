@@ -1,12 +1,12 @@
 import React from "react";
-import { useForm } from "react-hook-form";
 import { Inertia } from "@inertiajs/inertia";
-import { Button, Textarea } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { RepliesList } from "./RepliesList";
-import { formatDateForDisplay } from "../utils/formatDateForDisplay";
-import type { Reply } from "../types";
-import { useSharedPageProps } from "../hooks/useSharedPageProps";
+import { formatDateForDisplay } from "../../../utils/formatDateForDisplay";
+import type { Reply } from "../../../types";
+import { useSharedPageProps } from "../../../hooks/useSharedPageProps";
+import { ReplyForm } from "./ReplyForm";
 
 type ReplyCardProps = {
   reply: Reply;
@@ -27,12 +27,6 @@ export function ReplyCard({
 }: ReplyCardProps) {
   const [opened, handlers] = useDisclosure(false);
   const { currentUser } = useSharedPageProps();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<NewReplyFormData>();
 
   const onSubmit = (formData: NewReplyFormData) => {
     if (!currentUser) {
@@ -69,15 +63,7 @@ export function ReplyCard({
         <Button onClick={handlers.open}>Reply</Button>
       ) : (
         <div>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Textarea placeholder="Write a reply..." {...register("body")} />
-            <Button type="button" onClick={handlers.close}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              Submit
-            </Button>
-          </form>
+          <ReplyForm onSubmit={onSubmit} onCancel={handlers.close} />
         </div>
       )}
 

@@ -1,18 +1,22 @@
 import React from "react";
-import { Tabs } from "@mantine/core";
+import { Tabs, TabsValue } from "@mantine/core";
 import { Inertia } from "@inertiajs/inertia";
 import type { Channel, DataProp, Discussion } from "../../types";
 import { MainLayout } from "../../components/MainLayout";
 import { DiscussionCard } from "./components/DiscussionCard";
 
-type IndexProps = {
-  discussions: DataProp<Discussion[], { links: { new: string } }>;
-  channels: DataProp<Channel[]>;
-};
 // TODO: move out
 const getActiveChannel = (): string => {
   const [_, _channels, pathName] = window.location.pathname.split("/");
   return pathName;
+};
+
+const onTabChange = (value: TabsValue) =>
+  Inertia.get(`/channels/${value}/discussions`);
+
+type IndexProps = {
+  discussions: DataProp<Discussion[], { links: { new: string } }>;
+  channels: DataProp<Channel[]>;
 };
 
 export default function Index({ discussions, channels }: IndexProps) {
@@ -20,7 +24,7 @@ export default function Index({ discussions, channels }: IndexProps) {
     <MainLayout newDiscussionLink={discussions.meta?.links.new}>
       <Tabs
         value={getActiveChannel() ?? "all"}
-        onTabChange={(value) => Inertia.get(`/channels/${value}/discussions`)} //TODO: get links from rails?
+        onTabChange={(value) => onTabChange(value)}
         mb="xl"
       >
         <Tabs.List grow>
