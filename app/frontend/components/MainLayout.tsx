@@ -88,7 +88,7 @@ export function MainLayout({
           p="md"
           hiddenBreakpoint="sm"
           hidden={false /** TODO: */}
-          width={{ sm: 200, lg: 400 }}
+          width={{ sm: 200, lg: 500 }}
         >
           <Text>Application navbar</Text>
           {newDiscussionLink ? (
@@ -105,7 +105,7 @@ export function MainLayout({
       }
       aside={
         <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
-          <Aside p="md" hiddenBreakpoint="sm" width={{ sm: 200, lg: 400 }}>
+          <Aside p="md" hiddenBreakpoint="sm" width={{ sm: 200, lg: 500 }}>
             <Text>Application sidebar</Text>
           </Aside>
         </MediaQuery>

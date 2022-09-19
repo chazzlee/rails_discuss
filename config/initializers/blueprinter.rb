@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 require 'oj'
-require_relative '../../app/transformers/lower_camel_transformer' # another way??
+
+class LowerCamelTransformer < Blueprinter::Transformer
+  def transform(hash, _object, _options)
+    hash.transform_keys! { |key| key.to_s.camelize(:lower).to_sym }
+  end
+end
 
 Blueprinter.configure do |config|
   config.generator = Oj

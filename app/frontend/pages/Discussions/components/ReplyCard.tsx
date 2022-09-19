@@ -30,6 +30,8 @@ export function ReplyCard({
 
   const onSubmit = (formData: NewReplyFormData) => {
     if (!currentUser) {
+      // TODO:
+      console.log("must sign in first");
       return;
     }
 
@@ -45,6 +47,8 @@ export function ReplyCard({
       preserveScroll: true,
     });
   };
+
+  console.log(currentUser);
 
   return (
     <div
