@@ -9,6 +9,7 @@ type DiscussionCardProps = {
   discussion: Discussion;
 };
 
+// TODO:
 const getChannelColor = (channel: Channel) => {
   const colors = {
     orange: "orange",
