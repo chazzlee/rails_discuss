@@ -8,22 +8,23 @@ import { DiscussionCard } from "./components/DiscussionCard";
 // TODO: move out
 const getActiveChannel = (): string => {
   const [_, _channels, pathName] = window.location.pathname.split("/");
-  return pathName;
+  return pathName ?? "all";
 };
 
 const onTabChange = (value: TabsValue) =>
   Inertia.get(`/channels/${value}/discussions`);
 
 type IndexProps = {
-  discussions: DataProp<Discussion[], { links: { create: string } }>;
+  discussions: DataProp<Discussion[], { create: string }>;
   channels: DataProp<Channel[]>;
 };
 
 export default function Index({ discussions, channels }: IndexProps) {
+  console.log(getActiveChannel());
   return (
-    <MainLayout createDiscussionPath={discussions.meta?.links.create}>
+    <MainLayout createDiscussionPath={discussions.meta?.create}>
       <Tabs
-        value={getActiveChannel() ?? "all"}
+        value={getActiveChannel()}
         onTabChange={(value) => onTabChange(value)}
         mb="xl"
       >
