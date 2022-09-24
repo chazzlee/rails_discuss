@@ -1,35 +1,34 @@
-import React, { useRef, type ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import { Link } from "@inertiajs/inertia-react";
 import {
   AppShell,
   Aside,
   Button,
-  Container,
-  Group,
   MediaQuery,
-  Menu,
+  Modal,
   Navbar,
   Text,
 } from "@mantine/core";
-import { Header } from "@mantine/core";
-
-import { useSharedPageProps } from "../hooks/useSharedPageProps";
 import { AppHeader } from "./AppHeader";
+import NewDiscussion from "../pages/Discussions/components/NewDiscussion";
+import { useSharedPageProps } from "../hooks/useSharedPageProps";
 
 type MainLayoutProps = {
   children: ReactNode;
-  newDiscussionLink?: string;
+  createDiscussionPath?: string;
   onShowReplyForm?(): void;
 };
 
 // TODO: move to function later
-// const _token = document.getElementsByTagName("meta")[2].getAttribute("content");
+const _token = document.getElementsByTagName("meta")[2].getAttribute("content");
 
 export function MainLayout({
   children,
-  newDiscussionLink,
+  createDiscussionPath,
   onShowReplyForm,
 }: MainLayoutProps) {
+  const [opened, setOpened] = useState(false);
+  const { channels } = useSharedPageProps();
   return (
     <AppShell
       sx={{ backgroundColor: "#F8F9FA" }}
@@ -42,10 +41,8 @@ export function MainLayout({
           width={{ sm: 200, lg: 500 }}
         >
           <Text>Application navbar</Text>
-          {newDiscussionLink ? (
-            <Button component={Link} href={newDiscussionLink} color="red.6">
-              New Discussion
-            </Button>
+          {createDiscussionPath ? (
+            <Button onClick={() => setOpened(true)}>New Discussion</Button>
           ) : null}
           {onShowReplyForm ? (
             <Button color="red.6" onClick={onShowReplyForm}>
@@ -63,6 +60,13 @@ export function MainLayout({
       }
     >
       {children}
+      <NewDiscussion
+        channels={channels}
+        newDiscussionLink={createDiscussionPath || ""}
+        _token={_token ?? ""}
+        opened={opened}
+        onClose={() => setOpened(false)}
+      />
     </AppShell>
   );
 }

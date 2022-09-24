@@ -13,7 +13,7 @@ class DiscussionsController < ApplicationController
 
     render inertia: 'Discussions/Index', props: {
       discussions: DiscussionBlueprint.render_as_json(
-        discussions, root: :data, meta: { links: { new: new_discussion_path } }, view: :index
+        discussions, root: :data, meta: { links: { create: discussions_path } }, view: :index
       )
     }
   end

@@ -1,14 +1,15 @@
 import React from "react";
 import { Inertia } from "@inertiajs/inertia";
 import { useForm } from "react-hook-form";
-import { MainLayout } from "../../components/MainLayout";
-import { Channel, DataProp } from "../../types";
-import { Text } from "@mantine/core";
+import { Channel, DataProp } from "../../../types";
+import { Modal, Text } from "@mantine/core";
 
-type NewProps = {
+type NewDiscussionProps = {
   channels: DataProp<Channel[]>;
   newDiscussionLink: string;
   _token: string;
+  opened: boolean;
+  onClose(): void;
 };
 
 type NewDiscussionFormData = {
@@ -16,7 +17,13 @@ type NewDiscussionFormData = {
   body: string;
   channel: string;
 };
-export default function New({ channels, newDiscussionLink, _token }: NewProps) {
+export default function NewDiscussion({
+  channels,
+  newDiscussionLink,
+  _token,
+  opened,
+  onClose,
+}: NewDiscussionProps) {
   const {
     register,
     handleSubmit,
@@ -29,16 +36,16 @@ export default function New({ channels, newDiscussionLink, _token }: NewProps) {
       channel_id: parseInt(formData.channel, 10),
       authenticity_token: _token,
     };
-    Inertia.post(newDiscussionLink, newDiscussion);
+    // TODO: FIXME:
+    Inertia.post("/discussions", newDiscussion);
   };
 
-  console.log(errors);
+  console.log(newDiscussionLink);
   {
     /* TODO: validations & errors */
   }
   return (
-    <MainLayout>
-      <h1>Create new discussion!</h1>
+    <Modal opened={opened} onClose={onClose} title="Start a new discussion">
       <Text color="red" size="sm">
         {errors && errors.title?.message}
       </Text>
@@ -77,6 +84,6 @@ export default function New({ channels, newDiscussionLink, _token }: NewProps) {
           </button>
         </div>
       </form>
-    </MainLayout>
+    </Modal>
   );
 }

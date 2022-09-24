@@ -15,13 +15,13 @@ const onTabChange = (value: TabsValue) =>
   Inertia.get(`/channels/${value}/discussions`);
 
 type IndexProps = {
-  discussions: DataProp<Discussion[], { links: { new: string } }>;
+  discussions: DataProp<Discussion[], { links: { create: string } }>;
   channels: DataProp<Channel[]>;
 };
 
 export default function Index({ discussions, channels }: IndexProps) {
   return (
-    <MainLayout newDiscussionLink={discussions.meta?.links.new}>
+    <MainLayout createDiscussionPath={discussions.meta?.links.create}>
       <Tabs
         value={getActiveChannel() ?? "all"}
         onTabChange={(value) => onTabChange(value)}
