@@ -1,11 +1,9 @@
 import React, { useState, type ReactNode } from "react";
-import { Link } from "@inertiajs/inertia-react";
 import {
   AppShell,
   Aside,
   Button,
   MediaQuery,
-  Modal,
   Navbar,
   Text,
 } from "@mantine/core";
