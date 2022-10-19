@@ -13,7 +13,7 @@ class DiscussionsController < ApplicationController
 
     render inertia: 'Discussions/Index', props: {
       discussions: DiscussionBlueprint.render_as_json(
-        discussions, root: :data, meta: { links: { new: new_discussion_path } }, view: :index
+        discussions, root: :data, meta: { create: discussions_path }, view: :index
       )
     }
   end
@@ -46,12 +46,12 @@ class DiscussionsController < ApplicationController
     }
   end
 
-  def new
-    render inertia: 'Discussions/New', props: {
-      newDiscussionLink: discussions_path,
-      _token: form_authenticity_token
-    }
-  end
+  # def new
+  #   render inertia: 'Discussions/New', props: {
+  #     newDiscussionLink: discussions_path,
+  #     _token: form_authenticity_token
+  #   }
+  # end
 
   def create
     discussion = Discussion.new(discussion_params)
